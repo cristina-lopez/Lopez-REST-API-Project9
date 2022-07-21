@@ -1,18 +1,15 @@
 'use strict';
 const {Model, DataTypes} = require('sequelize');
-//comment example
 module.exports = (sequelize) => {
   class Course extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
-    static associate(models) {
-      // define association here
-    }
+    
   }
   Course.init({
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
     title: {
       type: DataTypes.STRING,
       //allowNull: false,
@@ -35,11 +32,9 @@ module.exports = (sequelize) => {
     materialsNeeded: DataTypes.STRING
   }, {
     sequelize,
-    modelName: 'Course',
   });
 
   Course.associate = (models) => {
-    // TODO Add associations.
     Course.belongsTo(models.User, {
       as: 'user', //alias
       foreignKey: {
