@@ -40,10 +40,10 @@ module.exports = (sequelize) => {
 
   User.associate = (models) => {
     // TODO Add associations.
-    User.hasMany(models.Movie, {
-      //as: 'director', //alias
+    User.hasMany(models.Course, {
+      as: 'user', //alias
       foreignKey: {
-        fieldName: 'userPersonId',
+        fieldName: 'userId',
         allowNull: false,
       }
     });

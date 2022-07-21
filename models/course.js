@@ -35,19 +35,19 @@ module.exports = (sequelize) => {
     materialsNeeded: DataTypes.STRING
   }, {
     sequelize,
-    modelName: 'User',
+    modelName: 'Course',
   });
 
   Course.associate = (models) => {
     // TODO Add associations.
     Course.belongsTo(models.User, {
-      //as: 'director', //alias
+      as: 'user', //alias
       foreignKey: {
-        fieldName: 'userPersonId',
+        fieldName: 'userId',
         allowNull: false,
       }
     });
   };
 
-  return User;
+  return Course;
 };

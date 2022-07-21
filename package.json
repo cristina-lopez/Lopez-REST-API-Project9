@@ -15,6 +15,7 @@
     "sequelize-cli": "^6.4.1"
   },
   "dependencies": {
+    "bcrypt": "^5.0.1",
     "bcryptjs": "^2.4.3",
     "cross-env": "^7.0.2",
     "express": "^4.17.1",
