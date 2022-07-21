@@ -99,7 +99,7 @@ router.post('/courses', asyncHandler(async(req, res) => {
     res.location(`/courses/${course.id}`);
     res.status(201).json({message: "New course created!"}).end();
   } catch (error) {
-    if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
+    if (error.name === 'SequelizeValidationError') {
       const errors = error.errors.map(err => err.message);
       res.status(400).json({ errors });   
     } else {
@@ -110,13 +110,22 @@ router.post('/courses', asyncHandler(async(req, res) => {
 
 // Route updates the corresponding course
 router.put('/courses/:id', asyncHandler(async(req, res) => {
-  const course = await Course.findByPk(req.params.id);
-    if(course) {
-      await course.update(req.body);
-      res.status(204).json({message: "Course has been updated!"}).end(); 
+  try {
+    const course = await Course.findByPk(req.params.id);
+      if(course) {
+        await course.update(req.body);
+        res.status(204).json({message: "Course has been updated!"}).end(); 
+      } else {
+        res.status(404).json({message: "Course not found."});
+      }
+  } catch (error) {
+    if (error.name === 'SequelizeValidationError') {
+      const errors = error.errors.map(err => err.message);
+      res.status(400).json({ errors });   
     } else {
-      res.status(404).json({message: "Course not found."});
+      throw error;
     }
+  }
 }));
 
 // Route deletes the corresponding course

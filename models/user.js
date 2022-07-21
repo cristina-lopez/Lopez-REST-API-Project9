@@ -6,17 +6,17 @@ module.exports = (sequelize) => {
 
   }
   User.init({
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
-    },
+    // id: {
+    //   type: DataTypes.INTEGER,
+    //   primaryKey: true,
+    //   autoIncrement: true,
+    // },
     firstName: {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
         notEmpty: {
-          msg: "first name field cannot be empty."
+          msg: "First Name field cannot be empty."
        }
       }
     },
@@ -25,7 +25,7 @@ module.exports = (sequelize) => {
       allowNull: false,
       validate: {
         notEmpty: {
-          msg: "last name field cannot be empty."
+          msg: "Last Name field cannot be empty."
         }
       }
     },
@@ -34,7 +34,7 @@ module.exports = (sequelize) => {
       allowNull: false,
       validate: {
         notEmpty: {
-          msg: "email field cannot be empty."
+          msg: "Email field cannot be empty."
         }
       }
     },
@@ -43,7 +43,7 @@ module.exports = (sequelize) => {
       allowNull: false,
       validate: {
         notEmpty: {
-          msg: "password field cannot be empty."
+          msg: "Password field cannot be empty."
         }
       }
     },

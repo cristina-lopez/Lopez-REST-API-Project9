@@ -5,28 +5,28 @@ module.exports = (sequelize) => {
     
   }
   Course.init({
-    id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
-    },
+    // id: {
+    //   type: DataTypes.INTEGER,
+    //   primaryKey: true,
+    //   autoIncrement: true,
+    // },
     title: {
       type: DataTypes.STRING,
-      //allowNull: false,
-      //validate: {
-      //  notEmpty: {
-      //    msg: "Title field cannot be empty."
-       // }
-      //}
+      allowNull: false,
+      validate: {
+        notEmpty: {
+          msg: "Title field cannot be empty."
+        }
+      }
     },
     description: {
       type: DataTypes.TEXT,
-      //allowNull: false,
-      //validate: {
-       // notEmpty: {
-       //   msg: "Author field cannot be empty."
-       // }
-      //}
+      allowNull: false,
+      validate: {
+        notEmpty: {
+          msg: "Description field cannot be empty."
+        }
+      }
     },
     estimatedTime: DataTypes.STRING,
     materialsNeeded: DataTypes.STRING
