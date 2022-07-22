@@ -7,48 +7,34 @@ const router = express.Router();
 const User = require('./models').User;
 //const user = require('./models/user');
 const Course  = require('./models').Course;
-//const bcrypt = require('bcrypt');
+const bcrypt = require('bcrypt');
 
-// Route returns all props and values for currently authenticated user.
+// Route returns props and values for currently authenticated user. 
+// IT WORKS!
 router.get('/users', authenticateUser, asyncHandler(async(req, res) => {
   const user = req.currentUser;
   res.status(200).json({
     firstName: user.firstName,
     lastName: user.lastName,
     emailAddress: user.emailAddress,
-    password: user.password,
   });
 }));
 
 // Route creates a new user.
+// IT WORKS! (CREATING EXISTING USER GIVES FUNKY ERROR)
 router.post('/users', asyncHandler(async(req, res) => {
   try {
-    const user = await User.create(req.body); 
-    console.log(req.body);
+    const user = req.body;
+    await User.create({
+      firstName: user.firstName,
+      lastName: user.lastName,
+      emailAddress: user.emailAddress,
+      password: bcrypt.hashSync(user.password, 10),
+    }); 
     res.location('/');
-    res.status(201).json({user, message: "Account created successfully!"}).end();
-    /* // add user validation
-    const errors = [];
-    if (!user.firstName) {
-      errors.push("Please provide a value for first name.");
-    }
-    if (!user.lastName) {
-      errors.push("Please provide a value for last name.");
-    }
-    if (!user.emailAddress) {
-      errors.push("Please provide a value for email address.");
-    }
-    if (!user.password) {
-      errors.push("Please provide a value for password.");
-    }
-    if (errors.length > 0) {
-      res.status(400).json({errors: errors});
-    } else {
-      res.location('/');
-      res.status(201).json({message: "Account created successfully!"}).end();
-    } */
+    res.status(201).json({message: "Account created successfully!"}).end();
   } catch (error) {
-    if (error.name === 'SequelizeValidationError') {
+    if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
       const errors = error.errors.map(err => err.message);
       res.status(400).json({ errors });   
     } else {
@@ -58,6 +44,7 @@ router.post('/users', asyncHandler(async(req, res) => {
 }));
 
 // Route returns all courses including user associated with course
+// IT WORKS!
 router.get('/courses', asyncHandler(async(req, res) => {
   const courses = await Course.findAll({
     include: [
@@ -67,12 +54,11 @@ router.get('/courses', asyncHandler(async(req, res) => {
       }
     ]
   });
-  res.status(200).json({
-    courses
-  });
+  res.status(200).json({courses});
 }));
 
 // Route returns corresponding course including user associated with the course
+// IT WORKS!
 router.get('/courses/:id', asyncHandler(async(req, res) => {
   const courses = await Course.findByPk(req.params.id, {
     include: [
@@ -88,14 +74,10 @@ router.get('/courses/:id', asyncHandler(async(req, res) => {
 }));
 
 // Route creates new course
-router.post('/courses', asyncHandler(async(req, res) => {
+// IT WORKS!
+router.post('/courses', authenticateUser, asyncHandler(async(req, res) => {
   try {
     const course = await Course.create(req.body);
-    //title: req.body.title,
-    //description: req.body.description,
-    //estimatedTime: req.body.estimatedTime,
-    //materialsNeeded: req.body.materialsNeeded,
-    //userId: req.body.userId,
     res.location(`/courses/${course.id}`);
     res.status(201).json({message: "New course created!"}).end();
   } catch (error) {
@@ -109,15 +91,16 @@ router.post('/courses', asyncHandler(async(req, res) => {
 }));
 
 // Route updates the corresponding course
-router.put('/courses/:id', asyncHandler(async(req, res) => {
+// IT UPDATES BUT DOES NOT POST MESSAGE 
+router.put('/courses/:id', authenticateUser, asyncHandler(async(req, res) => {
   try {
     const course = await Course.findByPk(req.params.id);
-      if(course) {
-        await course.update(req.body);
-        res.status(204).json({message: "Course has been updated!"}).end(); 
-      } else {
-        res.status(404).json({message: "Course not found."});
-      }
+    if(course) {
+      await course.update(req.body);
+      res.status(204).json({message: "Course has been updated!"}).end(); 
+    } else {
+      res.status(404).json({message: "Course not found."});
+    }
   } catch (error) {
     if (error.name === 'SequelizeValidationError') {
       const errors = error.errors.map(err => err.message);
@@ -129,7 +112,8 @@ router.put('/courses/:id', asyncHandler(async(req, res) => {
 }));
 
 // Route deletes the corresponding course
-router.delete('/courses/:id', asyncHandler(async(req, res) => {
+// IT WORKS BUT DOES NOT POST MESSAGE
+router.delete('/courses/:id', authenticateUser, asyncHandler(async(req, res) => {
   const course = await Course.findByPk(req.params.id);
     if(course) {
       await course.destroy();

@@ -17,16 +17,6 @@ app.use(express.json())
 app.use(morgan('dev'));
 app.use('/api', routes);
 
-(async () => {
-  await sequelize.sync();
-  try {
-    await sequelize.authenticate();
-    console.log('Connection to the database successful!!!');
-  } catch (error) {
-    console.log('Error connecting to the database');
-  }
-})();
-
 // setup a friendly greeting for the root route
 app.get('/', (req, res) => {
   res.json({
@@ -56,7 +46,25 @@ app.use((err, req, res, next) => {
 // set our port
 app.set('port', process.env.PORT || 5000);
 
-// start listening on our port
+(async () => {
+  await sequelize.sync();
+  try {
+    await sequelize.authenticate();
+    console.log('Connection to the database successful!!!');
+  } catch (error) {
+    console.log('Error connecting to the database');
+  }
+})();
+
+// Sequelize model synchronization, then start listening on our port.
+sequelize.sync()
+  .then( () => {
+    const server = app.listen(app.get('port'), () => {
+      console.log(`Express server is listening on port ${server.address().port}`);
+    });
+  });
+
+/* // start listening on our port
 const server = app.listen(app.get('port'), () => {
   console.log(`Express server is listening on port ${server.address().port}`);
-});
+}); */
