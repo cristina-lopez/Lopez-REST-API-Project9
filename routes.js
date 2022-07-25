@@ -28,7 +28,7 @@ router.post('/users', asyncHandler(async(req, res) => {
       firstName: user.firstName,
       lastName: user.lastName,
       emailAddress: user.emailAddress,
-      password: bcrypt.hashSync(user.password, 10),
+      password: user.password,
     }); 
     res.location('/');
     res.status(201).json({"message": "Account created successfully!"}).end();
@@ -46,18 +46,18 @@ router.post('/users', asyncHandler(async(req, res) => {
 // IT WORKS!
 router.get('/courses', asyncHandler(async(req, res) => {
   const courses = await Course.findAll({
-    attributes: {
+    include: [
+      {
+        model: User,
+        as: 'user',
+        attributes: ['id', 'firstName', 'lastName', 'emailAddress'],
+      }
+    ], attributes: {
       exclude: [
         'createdAt',
         'updatedAt',
       ]
     },
-    include: [
-      {
-        model: User,
-        as: 'user',
-      }
-    ], 
   });
   res.status(200).json({
     courses
@@ -68,10 +68,17 @@ router.get('/courses', asyncHandler(async(req, res) => {
 // IT WORKS!
 router.get('/courses/:id', asyncHandler(async(req, res) => {
   const course = await Course.findByPk(req.params.id, {
+    attributes: {
+      exclude: [
+        'createdAt',
+        'updatedAt',
+      ]
+    },
     include: [
       {
         model: User,
         as: 'user',
+        attributes: ['id', 'firstName', 'lastName', 'emailAddress'],
       }
     ]
   });
