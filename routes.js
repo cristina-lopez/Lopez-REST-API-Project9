@@ -6,10 +6,8 @@ const { authenticateUser } = require('./auth-user');
 const router = express.Router();
 const User = require('./models').User;
 const Course  = require('./models').Course;
-const bcrypt = require('bcrypt');
 
 // Route returns props and values for currently authenticated user. 
-// IT WORKS!
 router.get('/users', authenticateUser, asyncHandler(async(req, res) => {
   const user = req.currentUser;
   res.status(200).json({
@@ -20,18 +18,11 @@ router.get('/users', authenticateUser, asyncHandler(async(req, res) => {
 }));
 
 // Route creates a new user.
-// IT WORKS! (CREATING EXISTING USER GIVES FUNKY ERROR)
 router.post('/users', asyncHandler(async(req, res) => {
   try {
-    const user = req.body;
-    await User.create({
-      firstName: user.firstName,
-      lastName: user.lastName,
-      emailAddress: user.emailAddress,
-      password: user.password,
-    }); 
+    await User.create(req.body); 
     res.location('/');
-    res.status(201).json({"message": "Account created successfully!"}).end();
+    res.status(201).end();
   } catch (error) {
     if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
       const errors = error.errors.map(err => err.message);
@@ -43,7 +34,6 @@ router.post('/users', asyncHandler(async(req, res) => {
 }));
 
 // Route returns all courses including user associated with course
-// IT WORKS!
 router.get('/courses', asyncHandler(async(req, res) => {
   const courses = await Course.findAll({
     include: [
@@ -65,7 +55,6 @@ router.get('/courses', asyncHandler(async(req, res) => {
 }));
 
 // Route returns corresponding course including user associated with the course
-// IT WORKS!
 router.get('/courses/:id', asyncHandler(async(req, res) => {
   const course = await Course.findByPk(req.params.id, {
     attributes: {
@@ -92,7 +81,6 @@ router.get('/courses/:id', asyncHandler(async(req, res) => {
 }));
 
 // Route creates new course
-// IT WORKS!
 router.post('/courses', authenticateUser, asyncHandler(async(req, res) => {
   try {
     const course = await Course.create(req.body);
@@ -109,7 +97,6 @@ router.post('/courses', authenticateUser, asyncHandler(async(req, res) => {
 }));
 
 // Route updates the corresponding course
-// IT UPDATES BUT DOES NOT POST MESSAGE 
 router.put('/courses/:id', authenticateUser, asyncHandler(async(req, res) => {
   try {
     const course = await Course.findByPk(req.params.id);
@@ -134,7 +121,6 @@ router.put('/courses/:id', authenticateUser, asyncHandler(async(req, res) => {
 }));
 
 // Route deletes the corresponding course
-// IT WORKS BUT DOES NOT POST MESSAGE
 router.delete('/courses/:id', authenticateUser, asyncHandler(async(req, res) => {
   const course = await Course.findByPk(req.params.id);
     if(course) {
